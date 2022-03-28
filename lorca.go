@@ -7,6 +7,7 @@ import (
 	"github.com/zserge/lorca"
 )
 
+//
 func main() {
 	// Create UI with basic HTML passed via data URI
 	ui, err := lorca.New("data:text/html,"+url.PathEscape(`
