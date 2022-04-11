@@ -4,6 +4,7 @@ import (
 	"embed"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"github.com/skip2/go-qrcode"
 	"github.com/zserge/lorca"
 	"io/fs"
 	"io/ioutil"
@@ -27,6 +28,10 @@ func main() {
 		r.GET("/api/v1/addresses", AddressesController)
 		r.GET("/uploads/:path", UploadsController)
 		r.POST("/api/v1/texts", TextsController)
+<<<<<<< HEAD
+=======
+		r.GET("/api/v1/qrcodes", QrcodesController)
+>>>>>>> 392cd8b (实现上传文本、二维码接口)
 		// 让static/读取dist/dist文件夹里的文件
 		staticFiles, _ := fs.Sub(FS, "dist/dist")
 		r.StaticFS("/static", http.FS(staticFiles))
@@ -121,6 +126,7 @@ func TextsController(c *gin.Context) {
 		filename := uuid.New().String()          // 生成一个文件名
 		uploads := filepath.Join(dir, "uploads") // 拼接 uploads 的绝对路径
 		err = os.MkdirAll(uploads, os.ModePerm)  // 创建 uploads 目录,设置目录权限777
+<<<<<<< HEAD
 
 		if err != nil {
 
@@ -142,4 +148,29 @@ func TextsController(c *gin.Context) {
 
 	}
 
+=======
+		if err != nil {
+			log.Fatal(err)
+		}
+		fullpath := path.Join("uploads", filename+".txt")                            // 拼接文件的绝对路径（不含 exe 所在目录）
+		err = ioutil.WriteFile(filepath.Join(dir, fullpath), []byte(json.Raw), 0644) // 将 json.Raw 写入文件
+		if err != nil {
+			log.Fatal(err)
+		}
+		c.JSON(http.StatusOK, gin.H{"url": "/" + fullpath}) // 返回文件的绝对路径（不含 exe 所在目录）
+	}
+}
+
+//二维码接口
+func QrcodesController(c *gin.Context) {
+	if content := c.Query("content"); content != "" {
+		png, err := qrcode.Encode(content, qrcode.Medium, 256)
+		if err != nil {
+			log.Fatal(err)
+		}
+		c.Data(http.StatusOK, "image/png", png)
+	} else {
+		c.Status(http.StatusBadRequest)
+	}
+>>>>>>> 392cd8b (实现上传文本、二维码接口)
 }
